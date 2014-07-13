@@ -1,0 +1,25 @@
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vshadow", "src\src.vcproj", "{A05DCA4B-486C-4260-A6F6-519880C5DBFA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug-Server|Win32 = Debug-Server|Win32
+		Debug-XP|Win32 = Debug-XP|Win32
+		Release-Server|Win32 = Release-Server|Win32
+		Release-XP|Win32 = Release-XP|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A05DCA4B-486C-4260-A6F6-519880C5DBFA}.Debug-Server|Win32.ActiveCfg = Debug-Server|Win32
+		{A05DCA4B-486C-4260-A6F6-519880C5DBFA}.Debug-Server|Win32.Build.0 = Debug-Server|Win32
+		{A05DCA4B-486C-4260-A6F6-519880C5DBFA}.Debug-XP|Win32.ActiveCfg = Debug-XP|Win32
+		{A05DCA4B-486C-4260-A6F6-519880C5DBFA}.Debug-XP|Win32.Build.0 = Debug-XP|Win32
+		{A05DCA4B-486C-4260-A6F6-519880C5DBFA}.Release-Server|Win32.ActiveCfg = Release-Server|Win32
+		{A05DCA4B-486C-4260-A6F6-519880C5DBFA}.Release-Server|Win32.Build.0 = Release-Server|Win32
+		{A05DCA4B-486C-4260-A6F6-519880C5DBFA}.Release-XP|Win32.ActiveCfg = Release-XP|Win32
+		{A05DCA4B-486C-4260-A6F6-519880C5DBFA}.Release-XP|Win32.Build.0 = Release-XP|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,137 @@
+<html>
+
+<body>
+
+<h1>Volume Shadow Copy Simple Client</h1>
+
+<p>The Volume Shadow Copy Service is a service introduced in Windows NT and developed in every following Microsoft Operating System up to Windows 7 and beyond.
+It is based on snapshot capabilities provided by the NTFS file system, which allows copying files while they are in use (even locked by an 
+application writing them). In short, if a file is being modified, a consistent copy of the old version (actually a copy of the blocks of that file which are 
+being modified) is kept and new data are written to an alternate location, therefore preserving the former state of the volume as long as the snapshot exists.
+Support for this feature varies a lot depending on which Windows is in use: e.g. Windows 2003 supports persistent snapshots while Windows XP only 
+supports temporary snapshots.</p>
+
+<p>Unfortunately there in no application that can give you the advantage of shadow copies if you are using a script for backing up your data, or if you are
+a system administrator who likes handy tools such as rdiff-backup or robocopy. In fact, Windows' NTBackup is known to universally s**k and 
+VSHADOW.EXE (a tool bundled with the Microsoft SDK) is quite painful. I believe it was created as such on purpose.</p>
+
+<p>Here's where VSCSC can help you, since it's nothing but a modified version of VSHADOW.EXE that features a -exec option which is much nicer than the 
+original. This is what you need to know in order to use VSCSC:
+<ul>
+	<li>As of March 2011, it supports Windows XP, Windows Server 2003 for x86 and Windows Vista, Windows Server 2008 and Windows 7 for both x86/amd64.</li>
+	<li><b>It can only create one temporary snapshot (aka shadow copy) of only one volume.</b> This is different from the original VSHADOW.EXE, which can 
+create shadow copies of multiple volumes and many other things, such as permanent snapshots. Some other options have been removed.</li>
+	<li>It can execute a script of your choice, using the option -exec. The name of the temporary virtual device created for the snapshot is 
+passed to the script as a command line parameter, which means it will be saved into the %1 variable. </li>
+
+</ul>
+</p>
+
+<p><h3>Using VSCSC together with a batch script</h3></p>
+
+<p>
+This is the primary usage I had in mind.<br><br>
+
+<code>
+vscsc -exec=script.bat C:
+</code> 
+<br><br>
+If everything works as expected, this is what should happen:
+<ol>
+	<li>A new snapshot is created for volume C:, which corresponds to a volume such as<br> 
+			&quot;\\?\Volume{e64b105d-6e2a-11dd-b24a-00505695292c}&quot;	</li>
+	<li>The script named <code>script.bat</code> is invoked with parameter &quot;\\?\Volume{e64b105d-6e2a-11dd-b24a-00505695292c}&quot; or whatever was the
+weird name before. At this point <code>script.bat</code> can access the snapshot which is immutable and can be read with no problem at all.</li>
+	<li>When script.bat terminates, the snapshot gets deleted and so is the volume with the weird name.</li>
+</ol>
+
+So what? You cannot access devices beginning with &quot;\\?\&quot; from script files. 
+However, you can use a tool such as 
+	<a href="http://sourceforge.net/projects/vscsc/files/utilities/dosdev.zip/download">DOSDEV.exe</a>
+to map that name to a letter.
+Personally I like using B:, since it's not used anymore on modern PCs. So, a typical script would look something like this:<br>
+<code><br>
+@echo off<br>
+DOSDEV B: %1<br>
+rem At this point B: is an immutable snapshot of C:, and you can copy from it.<br>
+rem You just need to write some stuff that actually copies data from B: <br>
+rem My favourite is rdiff-backup, but only robocopy can operate in backup mode <br>
+rem as a member of the Backup Operators group (/B switch), therefore bypassing <br>
+rem file permissions and security. This might be required sometimes. <br>
+DOSDEV /D B:<br>
+</code><br>
+<i>Note that you can backup the entire system with a script, simply by copying the files 
+e.g. with <code>ROBOCOPY /MIR /B /SEC</code>. It will be consistent and you will be able to restore it completely, provided 
+that you also restore the MBR and reinstall the boot loader via the recovery console from your Windows CD.</i>
+Of course the destination drive MUST BE NTFS to preserve ACLs! 
+<br>It works very well as a free replacement for tools such as GHOST or TrueImage.
+</p>
+
+<p><h3>Using VSCSC manually</h3></p>
+
+<p>
+VSCSC retains most capabilities of VSHADOW.EXE. You can:
+<ul>
+	<li><p><b>list (query) snapshots with -q</b><br><code>vscsc -q</code></p></li>
+	<li><p><b>delete all snapshots with -da</b><br><code>vscsc -da </code></p></li>
+	<li><p><b>pause VSCSC just after snapshot creation with -wait</b><br><code> vscsc -wait C:</code><br>
+		 The snapshot will remain valid until RETURN is pressed!</p></li>
+	<li><p>...</p>
+</ul>
+
+Invoke VSCSC with no parameters to see all the available options.
+
+</p>
+
+
+<p><h3>Links</h3></p>
+
+<p>
+<ul>
+	<li><p><b><a href="http://sourceforge.net/projects/vscsc/files/vscsc-latest.zip/download" target="_blank">
+				Download Volume Shadow Copy Simple Client </b></a></p>
+	</li>
+
+	<li><p><b><a href="http://sourceforge.net/projects/vscsc/">Open the project page</b></a> at SourceForge.net.<br>
+			You can view and download program sources from here, ask for help, and so on.<br>
+			Microsoft Visual Studio 2008 is needed to compile from sources.</p>
+	</li>
+
+	<li><p><b><a href="http://sourceforge.net/projects/vscsc/forums/forum/1082153">Ask for help on the forum.</a></b><br></p></li>
+        <li><p><b>Sample scripts</b>
+		<ul>
+			<li> Simple <a href="robocopy-sample.bat"> batch script </a> to backup 
+				&quot;C:\Documents and Settings&quot; with robocopy </li>
+			<li> Simple <a href="rdiff-backup-sample.bat"> batch script </a> to backup 
+				&quot;C:\Documents and Settings&quot; with rdiff-backup </li>
+		</ul></p>
+	</li>
+	<li><p><b>Useful stuff.</b> The following are repacks of some utilities that I use daily in my job and at home as ideal companions to SVCVC.<br>	   
+		Each package contains separate versions for each of the supported platforms (currently Windows XP and Windows Server 2003 32 bit).
+		<ul>
+			<li><b><a href="http://sourceforge.net/projects/vscsc/files/utilities/dosdev.zip/download" target="_blank">DOSDEV.EXE</a></b><br>
+				It should work on Windows NT/2000/XP/2003/Vista/7.<br></li>
+			<li><b><a href="http://sourceforge.net/projects/vscsc/files/utilities/rdiff-backup.zip/download" target="_blank">
+				rdiff-backup</a></b><br>
+				 One of the best unix command line utilities for backups.
+				<a href="http://rdiff-backup.nongnu.org" target="_blank">rdiff-backup</a>
+				lets you take incremental snapshots of any folder and keep a history of changes, even remotely and across different systems 
+                   		(e.g. Windows to Linux with SSH or putty). <br></li>
+			<li><b><a href="http://sourceforge.net/projects/vscsc/files/utilities/robocopy.zip/download">ROBOCOPY.EXE for 
+					Win32</a></b>.<br>
+			 A nice command by Microsoft for copying files in backup mode and even remotely between Windows systems only.
+
+		</ul>
+	</p>	
+	</li>
+
+</ul>
+
+
+</p>
+
+</body>
+
+</html>
+
+
