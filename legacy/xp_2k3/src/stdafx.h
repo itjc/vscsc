@@ -9,8 +9,11 @@
 // General includes
 #include <windows.h>
 #include <winbase.h>
+#include <stdlib.h>
 
-// _ASSERTE declaration (used by ATL) and otehr macros
+
+// _ASSERTE declaration (used by ATL) and other macros
+#include <crtdbg.h>
 #include "macros.h"
 
 
@@ -34,4 +37,3 @@ using namespace std;
 #include <strsafe.h>
 
 #include "shadow.h"
-

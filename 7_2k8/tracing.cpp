@@ -48,7 +48,7 @@ void FunctionTracer::Trace(wstring file, int line, wstring functionName, wstring
         VPRINTF_VAR_PARAMS(buffer, format);
     
         size_t pos = file.find_last_of(L"\\");
-        wstring fileName = (pos == wstring.npos)? file: file.substr(pos+1);
+        wstring fileName = (pos == file.npos)? file: file.substr(pos+1);
 
         // TODO - put here your own implementation of a tracing routine, if needed
         wprintf(L"[[%40s @ %10s:%4d]] %s\n", functionName.c_str(), fileName.c_str(), line, buffer.c_str());

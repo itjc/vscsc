@@ -86,7 +86,7 @@ const int MAX_VPRINTF_BUFFER_SIZE = 4096;
 //
 //  Very simple ASSERT definition
 //
-
+/*
 #ifdef _DEBUG
     #define _ASSERTE(x) {                               \
         if (!(x))                                       \
@@ -100,7 +100,7 @@ const int MAX_VPRINTF_BUFFER_SIZE = 4096;
 #else
     #define _ASSERTE(x)
 #endif
-
+*/
 
 
 /////////////////////////////////////////////////////////////////////////////
